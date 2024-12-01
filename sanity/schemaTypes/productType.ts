@@ -2,8 +2,8 @@ import { TrolleyIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
 export const productType = defineType({
-  name: "Product",
-  title: "Products",
+  name: "product",
+  title: "Product",
   type: "document",
   icon: TrolleyIcon,
   fields: [
