@@ -1,6 +1,8 @@
+"use client";
+
 import { Product } from "@/sanity.types";
-import ProductThumbnail from "./ProductThumbnail";
 import { AnimatePresence, motion } from "framer-motion";
+import ProductThumbnail from "./ProductThumbnail";
 
 function ProductGrid({ products }: { products: Product[] }) {
   return (
