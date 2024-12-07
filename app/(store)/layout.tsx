@@ -23,7 +23,6 @@ export default function RootLayout({
             <Header />
             {children}
           </main>
-
           <SanityLive />
         </body>
       </html>
