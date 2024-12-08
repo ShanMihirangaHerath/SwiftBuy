@@ -1,10 +1,16 @@
+import AddToBasketButton from "@/components/AddToBasketButton";
+import { Button } from "@/components/ui/button";
 import { imageUrl } from "@/lib/imageUrl";
 import { getProductBySlug } from "@/sanity/lib/products/getProductBySlug";
 import { PortableText } from "next-sanity";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   // Await params slug
   const { slug } = await params;
 
@@ -58,6 +64,9 @@ export default async function ProductPage({ params }: { params: { slug: string }
                 <p>{product.description || "No description available."}</p>
               )}
             </div>
+          </div>
+          <div className="mt-6">
+            <AddToBasketButton product={product} disabled={isOutOfStock} />
           </div>
         </div>
       </div>
