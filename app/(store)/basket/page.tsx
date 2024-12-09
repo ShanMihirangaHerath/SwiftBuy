@@ -1,5 +1,6 @@
 "use client";
 
+import { createCheckoutSession, Metadata } from "@/action/createCheckoutSession";
 import AddToBasketButton from "@/components/AddToBasketButton";
 import Loader from "@/components/Loader";
 import { imageUrl } from "@/lib/imageUrl";
@@ -9,14 +10,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export type Metadata = {
-    orderNumber: string;
-    customerName: string;
-    customerEmail: string;
-    clerkUserId: string;
-}
-
-
 function BasketPage() {
   const groupedItems = useBasketStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
@@ -24,15 +17,15 @@ function BasketPage() {
   const router = useRouter();
 
   const [isClient, setIsClient] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Corrected: Initial state should be `false`.
 
-  //wait for client to mount
+  // Wait for client to mount
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  if (isClient) {
-    return <Loader />;
+  if (!isClient) {
+    return <Loader />; // Corrected: Loader should appear before the client is mounted.
   }
 
   if (groupedItems.length === 0) {
@@ -49,24 +42,22 @@ function BasketPage() {
     setIsLoading(true);
 
     try {
-        const metadata : Metadata = {
-            orderNumber: crypto.randomUUID(),
-            customerName: user?.fullName ?? "Unknown",
-            customerEmail: user?.emailAddresses[0].emailAddress?? "Unknown",
-            clerkUserId: user!.id,
-        };
-
-        const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
-
-        if(checkoutUrl){
-            window.location.href = checkoutUrl;
-        }
-
-    } catch (error) {
-        console.error("Error creating checkout session:", error);
-    }finally{
-        setIsLoading(false);
+      const metadata: Metadata = {
+        orderNumber: crypto.randomUUID(),
+        customerName: user?.fullName ?? "Unknown",
+        customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
+        clerkUserId: user!.id,
       };
+
+      const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
+
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      }
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -75,7 +66,7 @@ function BasketPage() {
       <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-grow">
-          {groupedItems?.map((item) => (
+          {groupedItems.map((item) => (
             <div
               key={item.product._id}
               className="mb-4 p-4 border rounded flex items-center justify-between"
@@ -102,7 +93,7 @@ function BasketPage() {
                     {item.product.name}
                   </h2>
                   <p className="text-sm sm:text-base">
-                    price: LKR.
+                    Price: LKR{" "}
                     {((item.product.price ?? 0) * item.quantity).toFixed(2)}
                   </p>
                 </div>
@@ -113,8 +104,8 @@ function BasketPage() {
             </div>
           ))}
         </div>
-        <div className="w-full lg:w-80 lg:sticky lg:top-4 h-fit bg-white p-6 border rounded order-first lg:order-last fixed bottom-0 left-0 lg:left-auto">
-          <h3 className="text-xl font-semibold">Order Summery</h3>
+        <div className="w-full lg:w-80 lg:sticky lg:top-4 h-fit bg-white p-6 border rounded order-first lg:order-last">
+          <h3 className="text-xl font-semibold">Order Summary</h3>
           <div className="mt-4 space-y-2">
             <p className="flex justify-between">
               <span>Items:</span>
@@ -125,7 +116,7 @@ function BasketPage() {
             <p className="flex justify-between text-2xl font-bold border-t pt-2">
               <span>Total:</span>
               <span>
-                LKR.{useBasketStore.getState().getTotalPrice().toFixed(2)}
+                LKR {useBasketStore.getState().getTotalPrice().toFixed(2)}
               </span>
             </p>
           </div>
