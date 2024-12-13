@@ -2,7 +2,6 @@
 
 import { Product } from "@/sanity.types";
 import useBasketStore from "@/store/store";
-import { it } from "node:test";
 import { useEffect, useState } from "react";
 
 interface AddToBasketButtonProps {
