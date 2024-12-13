@@ -2,8 +2,12 @@ import ProductsView from "@/components/ProductsView";
 import { getAllCategories } from "@/sanity/lib/products/getAllCategories";
 import { getProductsByCategory } from "@/sanity/lib/products/getProductsByCategory";
 
-async function Categories({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+type CategoriesProps = {
+  params: { slug: string };
+};
+
+async function Categories({ params }: CategoriesProps) {
+  const { slug } = params;
   const products = await getProductsByCategory(slug);
   const categories = await getAllCategories();
 
@@ -14,8 +18,8 @@ async function Categories({ params }: { params: Promise<{ slug: string }> }) {
           {slug
             .split("-")
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")}
-          (" ") Collection
+            .join(" ")}{" "}
+          Collection
         </h1>
         <ProductsView products={products} categories={categories} />
       </div>
